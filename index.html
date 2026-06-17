@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>V.I.A. — Vídeos Infinitos com IA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Oswald:wght@400;500;600;700&family=Barlow:wght@300;400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<style>
+:root {
+  --red:    #E8192C;
+  --gold:   #D4AF37;
+  --cream:  #F5F0E8;
+  --silver: #C0BAB2;
+  --bg:     #080808;
+  --bg-wine:#0D0008;
+  --bg-navy:#08080F;
+  --bg-plum:#0C0810;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--silver);
+  font-family: 'Barlow', sans-serif;
+  font-weight: 300;
+  font-size: 1rem;
+  line-height: 1.75;
+  overflow-x: hidden;
+}
+
+.container {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 0 clamp(24px, 5vw, 56px);
+}
+
+/* ── TYPOGRAPHY ── */
+
+/* Section H2s — Oswald */
+h2 {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  font-size: clamp(2.6rem, 5.5vw, 4.8rem);
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  line-height: 0.92;
+  color: var(--cream);
+  margin-bottom: clamp(16px, 2vw, 24px);
+}
+
+.highlight-red  { color: var(--red);  }
+.highlight-gold { color: var(--gold); }
+
+/* Eyebrow */
+.eyebrow {
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 0.68rem;
+  letter-spacing: 0.45em;
+  text-transform: uppercase;
+  color: var(--red);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+.eyebrow::before {
+  content: '';
+  width: 24px;
+  height: 1px;
+  background: var(--red);
+  flex-shrink: 0;
+}
+.eyebrow.in-view::before {
+  animation: lineGrow 0.6s ease forwards;
+}
+@keyframes lineGrow {
+  from { width: 0; }
+  to   { width: 24px; }
+}
+.sh.center .eyebrow,
+.guar-center .eyebrow { justify-content: center; }
+
+/* Body/paragraphs */
+p, .lead, .gem-desc, .step p, .faq-ai, .guar-text, .inc-item, .list-y li, .list-n li, .pillar p, .bonus-card p {
+  font-family: 'Barlow', sans-serif;
+  font-weight: 300;
+  font-size: clamp(0.95rem, 1.5vw, 1.1rem);
+  line-height: 1.85;
+  color: var(--silver);
+}
+
+section:not(.hero) { padding: clamp(80px, 10vw, 130px) 0; }
+
+.sec-line {
+  width: 44px; height: 2px;
+  background: linear-gradient(90deg, var(--red), var(--gold));
+  margin: 14px 0 48px;
+}
+.sec-line.center { margin: 14px auto 48px; }
+
+.sh { margin-bottom: 60px; }
+.sh.center { text-align: center; }
+.sh h2 { margin-bottom: 20px; }
+
+/* Section divider */
+.section-divider {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(232,25,44,0.20) 30%,
+    rgba(212,175,55,0.15) 70%,
+    transparent 100%
+  );
+}
+
+/* ── NAVBAR ── */
+.navbar {
+  position: fixed; top: 0; width: 100%; z-index: 100;
+  padding: 28px 56px; transition: all 0.4s ease;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.navbar.scrolled {
+  background: rgba(8,8,8,0.92);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  padding: 18px 56px;
+  border-bottom: 1px solid rgba(232,25,44,0.12);
+}
+.nav-logo {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900; font-size: 1.4rem;
+  color: var(--cream); text-decoration: none; letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.nav-links {
+  display: flex; gap: 32px; align-items: center; list-style: none;
+}
+.nav-links a {
+  font-family: 'Inter', sans-serif; font-size: 0.83rem; font-weight: 500;
+  color: var(--silver); text-decoration: none; transition: color 0.3s;
+}
+.nav-links a:hover { color: var(--red); }
+.nav-cta {
+  font-family: 'Inter', sans-serif; font-size: 0.72rem; font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: #fff; background: var(--red); border: none;
+  padding: 11px 22px; border-radius: 3px; cursor: pointer;
+  text-decoration: none; transition: opacity 0.3s;
+}
+.nav-cta:hover { opacity: 0.85; }
+
+/* ── HERO ── */
+.hero {
+  position: relative; height: 100vh; min-height: 720px;
+  overflow: hidden; display: flex; align-items: center;
+  background: #080808;
+  padding-top: 90px; /* offset navbar */
+}
+.hero-bg-img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: 68% center;
+  z-index: 0; will-change: transform;
+  transition: transform 0.1s ease-out;
+  transform: scale(1.04);
+}
+.hero::before {
+  content: ''; position: absolute; inset: 0; z-index: 1;
+  background:
+    linear-gradient(
+      to right,
+      rgba(8,8,8,1.00)  0%,
+      rgba(8,8,8,0.97) 28%,
+      rgba(8,8,8,0.78) 44%,
+      rgba(8,8,8,0.20) 64%,
+      transparent      100%
+    ),
+    linear-gradient(
+      to bottom,
+      rgba(8,8,8,0.55) 0%,
+      transparent      18%,
+      transparent      82%,
+      rgba(8,8,8,0.65) 100%
+    );
+}
+#particlesCanvas {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  z-index: 2; pointer-events: none;
+}
+.hero-content { position: relative; z-index: 3; width: 100%; }
+.hero .container,
+.hero-content {
+  padding-left: clamp(32px, 4vw, 64px);
+  padding-right: 0;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.hero-copy {
+  max-width: 440px;
+  margin-left: 0;
+  padding-left: 0;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.hero .eyebrow {
+  letter-spacing: 0.45em;
+  margin-bottom: 28px;
+}
+.hero-h1 {
+  display: flex; flex-direction: column; gap: 0;
+  line-height: 0.88; margin-bottom: 0;
+}
+.h1-thin {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: clamp(1.6rem, 3.2vw, 3rem);
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: rgba(245,240,232,0.65);
+  line-height: 1;
+  display: block;
+  margin-bottom: 4px;
+}
+.h1-heavy {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
+  font-size: clamp(3.8rem, 8vw, 7.5rem);
+  letter-spacing: -0.02em; text-transform: uppercase;
+  line-height: 0.90;
+  margin-bottom: 28px;
+  display: block;
+  max-width: 100%;
+  white-space: normal;
+  overflow: visible;
+  word-break: keep-all;
+  overflow-wrap: normal;
+  hyphens: none;
+  background: linear-gradient(135deg, #F5F0E8 0%, #F5F0E8 55%, #E8192C 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.h1-heavy .dot { color: #E8192C; -webkit-text-fill-color: #E8192C; }
+.hero-lead {
+  font-family: 'Barlow', sans-serif;
+  font-weight: 300;
+  font-size: clamp(0.95rem, 1.5vw, 1.08rem);
+  line-height: 1.80; color: rgba(192,186,178,0.85);
+  max-width: 400px;
+  margin-top: 32px;
+  margin-bottom: 40px;
+}
+.hero-cta-group { display: flex; align-items: center; gap: 28px; flex-wrap: wrap; }
+
+/* ── MARQUEE ── */
+.marquee-section { overflow: hidden; }
+.marquee-wrap    { overflow: hidden; width: 100%; }
+.marquee-inner {
+  display: flex;
+  width: max-content;
+  animation: marqueeSpin linear infinite;
+}
+@keyframes marqueeSpin {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.marquee-wrap:hover .marquee-inner { animation-play-state: paused; }
+
+/* ── BUTTONS ── */
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 18px 40px;
+  background: linear-gradient(135deg, var(--red), #C1101F);
+  color: #fff; font-family: 'Inter', sans-serif;
+  font-size: 0.82rem; font-weight: 600;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  border: none; border-radius: 4px; cursor: pointer;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+.btn-primary:hover { transform: translateY(-2px); opacity: 0.92; }
+.cta-glow { animation: ctaPulse 2.5s ease-in-out infinite; }
+@keyframes ctaPulse {
+  0%,100% { box-shadow: 0 0 20px rgba(232,25,44,0.4), 0 0 40px rgba(232,25,44,0.15); }
+  50%      { box-shadow: 0 0 52px rgba(232,25,44,0.8), 0 0 100px rgba(212,175,55,0.2), 0 0 140px rgba(232,25,44,0.1); }
+}
+.btn-ghost {
+  color: var(--silver); font-family: 'Inter', sans-serif;
+  font-size: 0.9rem; font-weight: 400; text-decoration: none;
+  border-bottom: 1px solid rgba(192,186,178,0.3);
+  transition: color 0.3s, border-color 0.3s;
+}
+.btn-ghost:hover { color: var(--cream); border-color: var(--cream); }
+
+/* ── CARDS ── */
+.card {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 10px;
+  padding: 40px 32px;
+  transition: transform 0.4s cubic-bezier(0.23,1,0.32,1),
+              box-shadow 0.4s ease,
+              border-color 0.4s ease;
+}
+.card:hover {
+  transform: translateY(-8px);
+  border-color: rgba(232,25,44,0.28);
+  box-shadow:
+    0 24px 64px rgba(232,25,44,0.10),
+    0 0 0 1px rgba(212,175,55,0.06);
+}
+
+/* ── GRIDS ── */
+.g3  { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
+.g2  { display: grid; grid-template-columns: repeat(2,1fr); gap: 32px; }
+.g22 { display: grid; grid-template-columns: repeat(2,1fr); gap: 24px; }
+
+/* ── [02] PROBLEMA ── */
+.problema { background: var(--bg-wine); }
+.prob-icon { font-size: 2rem; margin-bottom: 18px; display: block; }
+.prob-card h3 {
+  font-family: 'Oswald', sans-serif;
+  font-size: clamp(1.3rem, 2.2vw, 1.65rem);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--cream);
+  margin-bottom: 12px;
+}
+
+/* ── [03] SOLUÇÃO ── */
+.solucao { background: var(--bg-navy); }
+.deco-inf {
+  font-size: 5rem; color: var(--red); opacity: 0.13;
+  text-align: center; line-height: 1; margin-bottom: 16px;
+  font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+}
+.pillar {
+  display: flex; align-items: flex-start; gap: 18px; padding: 26px;
+}
+.pillar-ic { font-size: 1.5rem; flex-shrink: 0; margin-top: 2px; }
+.pillar h3 {
+  font-family: 'Oswald', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--cream);
+  margin-bottom: 6px;
+}
+
+/* ── [04] OS DIRETORES ── */
+.gems { background: var(--bg-plum); }
+.gem-card { padding: 36px 28px; }
+.gem-ic { width: 42px; height: 42px; margin-bottom: 20px; }
+.gem-name {
+  font-family: 'Oswald', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--cream);
+  margin: 16px 0 10px;
+}
+.gem-role {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.68rem; font-weight: 500;
+  letter-spacing: 0.35em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 14px;
+}
+
+/* ── [05] PARA QUEM ── */
+.para-quem { background: var(--bg-wine); }
+.col-title {
+  font-family: 'Inter', sans-serif; font-size: 0.62rem; font-weight: 600;
+  letter-spacing: 0.25em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 28px;
+}
+.list-y, .list-n { list-style: none; display: flex; flex-direction: column; gap: 16px; }
+.list-y li, .list-n li {
+  display: flex; align-items: flex-start; gap: 13px;
+  font-size: clamp(0.95rem, 1.5vw, 1.05rem); line-height: 1.65;
+}
+.chk { flex-shrink: 0; margin-top: 1px; }
+
+/* ── [06] COMO FUNCIONA ── */
+.como { background: var(--bg); }
+.steps { display: flex; gap: 0; position: relative; }
+.step { flex: 1; padding: 0 28px; position: relative; text-align: center; }
+.step:first-child { padding-left: 0; }
+.step:last-child { padding-right: 0; }
+.step-num {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: clamp(6rem, 11vw, 10rem); font-weight: 900;
+  color: var(--red); opacity: 0.07; line-height: 1;
+  position: absolute; top: -16px; left: 50%; transform: translateX(-50%);
+  pointer-events: none; user-select: none; white-space: nowrap;
+}
+.step-body { position: relative; z-index: 1; padding-top: 88px; }
+.step-lbl {
+  font-family: 'Inter', sans-serif; font-size: 0.6rem; font-weight: 600;
+  letter-spacing: 0.28em; text-transform: uppercase; color: var(--red);
+  margin-bottom: 10px; display: block;
+}
+.step h3 {
+  font-family: 'Oswald', sans-serif;
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--cream);
+  margin-bottom: 14px;
+}
+.steps-svg {
+  position: absolute; top: 52px; left: 25%; right: 25%; pointer-events: none;
+}
+.steps-svg path { stroke-dasharray: 400; stroke-dashoffset: 400; }
+
+/* ── [07] O QUE RECEBE ── */
+.recebe { background: var(--bg-navy); }
+.counters { display: flex; gap: 56px; margin-bottom: 64px; flex-wrap: wrap; }
+.ctr-val {
+  font-family: 'Oswald', sans-serif;
+  font-size: clamp(3rem, 6vw, 5.5rem); font-weight: 700;
+  color: var(--cream); line-height: 1; display: block;
+  text-transform: uppercase;
+}
+.ctr-lbl {
+  font-family: 'Inter', sans-serif; font-size: 0.72rem; font-weight: 500;
+  letter-spacing: 0.15em; text-transform: uppercase; color: var(--silver); margin-top: 8px;
+}
+.inc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap: 14px; }
+.inc-item {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 20px;
+  font-size: clamp(0.92rem, 1.4vw, 1rem);
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.05); border-radius: 8px;
+  transition: border-color 0.3s;
+}
+.inc-item:hover { border-color: rgba(212,175,55,0.22); }
+
+/* ── [08] BÔNUS ── */
+.bonus { background: var(--bg-plum); }
+.bonus-card {
+  position: relative; padding: 36px 30px;
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(212,175,55,0.12); border-radius: 10px;
+  transition: transform 0.4s cubic-bezier(0.23,1,0.32,1),
+              border-color 0.4s ease,
+              box-shadow 0.4s ease;
+}
+.bonus-card:hover {
+  transform: translateY(-8px);
+  border-color: rgba(212,175,55,0.32);
+  box-shadow: 0 24px 64px rgba(212,175,55,0.08),
+              0 0 0 1px rgba(212,175,55,0.06);
+}
+.btag {
+  position: absolute; top: -1px; left: 22px;
+  font-family: 'Inter', sans-serif; font-size: 0.58rem; font-weight: 700;
+  letter-spacing: 0.2em; text-transform: uppercase; color: var(--red);
+  background: var(--bg-plum); padding: 4px 10px;
+  border: 1px solid rgba(232,25,44,0.22); border-top: none;
+  border-radius: 0 0 4px 4px;
+}
+.bonus-card h3 {
+  font-family: 'Oswald', sans-serif;
+  font-size: clamp(1.3rem, 2.2vw, 1.65rem);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--cream);
+  margin-top: 16px; margin-bottom: 10px;
+}
+
+/* ── [09] GARANTIA ── */
+.garantia { background: var(--bg-wine); }
+.guar-center { text-align: center; max-width: 640px; margin: 0 auto; }
+.shield-wrap { margin: 0 auto 40px; width: 96px; }
+.guar-text { margin-top: 24px; }
+
+/* ── [10] PREÇO ── */
+.preco { background: var(--bg); }
+.price-card {
+  max-width: 520px; margin: 0 auto;
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 16px; padding: 52px 44px; text-align: center;
+  transition: border-color 0.4s, background 0.4s;
+}
+.price-card:hover {
+  border-color: transparent;
+  background: linear-gradient(#0A0808,#0A0808) padding-box,
+    linear-gradient(135deg, var(--red), var(--gold)) border-box;
+}
+.p-tag {
+  font-family: 'Inter', sans-serif; font-size: 0.62rem; font-weight: 600;
+  letter-spacing: 0.28em; text-transform: uppercase; color: var(--red);
+  margin-bottom: 14px; display: block;
+}
+.p-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 2.6rem; font-weight: 900; color: var(--cream);
+  letter-spacing: 0.15em; margin-bottom: 32px; text-transform: uppercase;
+}
+.p-from { font-family: 'Barlow', sans-serif; font-weight: 300; font-size: 0.88rem; color: var(--silver); opacity: 0.45; text-decoration: line-through; margin-bottom: 6px; }
+.p-val {
+  font-family: 'Oswald', sans-serif;
+  font-size: clamp(4rem, 8vw, 6.5rem); font-weight: 700;
+  color: var(--cream); line-height: 1;
+}
+.p-cur { font-size: 2rem; vertical-align: super; font-weight: 700; }
+.p-inst { font-family: 'Barlow', sans-serif; font-weight: 300; font-size: 0.88rem; color: var(--silver); opacity: 0.65; margin-top: 8px; margin-bottom: 34px; }
+.p-list { list-style: none; text-align: left; margin-bottom: 36px; display: flex; flex-direction: column; gap: 13px; }
+.p-list li { display: flex; align-items: center; gap: 11px; font-family: 'Barlow', sans-serif; font-weight: 300; font-size: 0.925rem; color: var(--silver); }
+.p-sec { font-family: 'Barlow', sans-serif; font-weight: 300; font-size: 0.78rem; color: var(--silver); opacity: 0.45; margin-top: 16px; }
+
+/* ── [11] FAQ ── */
+.faq { background: var(--bg-navy); }
+.faq-list { max-width: 760px; margin: 0 auto; }
+.faq-item { border-bottom: 1px solid rgba(255,255,255,0.06); }
+.faq-q {
+  width: 100%; background: none; border: none; color: var(--cream);
+  font-family: 'Inter', sans-serif; font-size: 0.97rem; font-weight: 500;
+  text-align: left; padding: 24px 0; cursor: pointer;
+  display: flex; justify-content: space-between; align-items: center; gap: 16px;
+  transition: color 0.3s;
+}
+.faq-q:hover { color: var(--red); }
+.faq-chev { flex-shrink: 0; transition: transform 0.4s ease; color: var(--red); }
+.faq-a { overflow: hidden; height: 0; }
+.faq-ai { padding-bottom: 24px; font-size: clamp(0.92rem, 1.4vw, 1rem); }
+
+/* ── FOOTER ── */
+footer { background: #040404; padding: 48px 0 32px; }
+.f-div { height: 1px; background: linear-gradient(to right, var(--red), var(--gold), transparent); margin-bottom: 40px; }
+.f-inner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
+.f-logo { font-family: 'Barlow Condensed', sans-serif; font-size: 1.9rem; font-weight: 900; color: var(--cream); letter-spacing: 0.15em; text-transform: uppercase; }
+.f-tagline { font-family: 'Barlow', sans-serif; font-weight: 300; font-size: 0.82rem; color: var(--silver); opacity: 0.45; margin-top: 4px; }
+.f-links { display: flex; gap: 24px; list-style: none; }
+.f-links a { font-family: 'Inter', sans-serif; font-size: 0.78rem; color: var(--silver); opacity: 0.45; text-decoration: none; transition: opacity 0.3s; }
+.f-links a:hover { opacity: 1; }
+.f-copy { font-family: 'Inter', sans-serif; font-weight: 300; font-size: 0.72rem; color: var(--silver); opacity: 0.28; }
+
+/* ── FLOATING CTA ── */
+.floating-cta {
+  display: none; position: fixed; bottom: 20px; left: 16px; right: 16px;
+  z-index: 999; opacity: 0; transform: translateY(20px); transition: all 0.4s ease;
+}
+@media (max-width: 768px) { .floating-cta { display: block; } }
+.floating-cta.visible { opacity: 1; transform: translateY(0); }
+.floating-cta .btn-primary { width: 100%; justify-content: center; padding: 17px; }
+
+/* ── MOBILE ── */
+@media (max-width: 768px) {
+  .navbar { padding: 16px 20px; }
+  .navbar.scrolled { padding: 12px 20px; }
+  .nav-links { display: none; }
+  .hero { height: 100svh; align-items: flex-end; padding-bottom: 72px; }
+  .hero-copy { max-width: 100%; text-align: left; padding-top: 0; }
+  .hero-lead { max-width: 100%; }
+  .h1-thin { font-size: clamp(1.8rem, 8vw, 2.8rem); }
+  .h1-heavy { font-size: clamp(3.5rem, 14vw, 5.5rem); }
+  .hero-bg-img { object-position: 72% center; opacity: 0.55; }
+  .hero-cta-group { flex-direction: column; align-items: flex-start; gap: 16px; }
+  .g3, .g2, .g22 { grid-template-columns: 1fr; }
+  .steps { flex-direction: column; gap: 40px; }
+  .steps-svg { display: none; }
+  .step { padding: 0; }
+  .step:first-child, .step:last-child { padding: 0; }
+  .counters { justify-content: center; gap: 36px; }
+  .price-card { padding: 32px 22px; }
+}
+
+/* ── WHATSAPP ── */
+.nav-wa {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: #25D366; color: #fff;
+  font-family: 'Inter', sans-serif; font-size: 0.72rem; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 9px 18px; border-radius: 100px; text-decoration: none;
+  transition: opacity 0.3s, transform 0.3s; white-space: nowrap;
+}
+.nav-wa:hover { opacity: 0.88; transform: translateY(-1px); }
+.nav-wa svg { flex-shrink: 0; }
+
+.hero-wa-link {
+  display: inline-flex; align-items: center; gap: 8px;
+  color: rgba(192,186,178,0.52);
+  font-family: 'Inter', sans-serif; font-size: 0.78rem; font-weight: 400;
+  text-decoration: none; margin-top: 14px; transition: color 0.3s;
+}
+.hero-wa-link:hover { color: #25D366; }
+.hero-wa-link svg { flex-shrink: 0; }
+
+/* WP Float — pill */
+.wp-float {
+  position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+  height: 52px; border-radius: 100px;
+  background: #25D366;
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 0 22px 0 16px;
+  text-decoration: none; white-space: nowrap;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.28);
+  opacity: 0; transform: translateY(20px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  animation: wp-pulse 2.5s ease-in-out infinite;
+}
+.wp-float.visible { opacity: 1; transform: translateY(0); }
+.wp-float:hover { transform: translateY(0) scale(1.03); }
+.wp-float-text {
+  font-family: 'Inter', sans-serif; font-size: 0.78rem; font-weight: 600;
+  color: #fff; letter-spacing: 0.01em;
+}
+@keyframes wp-pulse {
+  0%,100% { box-shadow: 0 4px 16px rgba(0,0,0,0.25), 0 0 0 0 rgba(37,211,102,0.5); }
+  50%      { box-shadow: 0 4px 16px rgba(0,0,0,0.25), 0 0 0 10px rgba(37,211,102,0); }
+}
+
+/* ── EXTRA SMALL MOBILE ── */
+@media (max-width: 430px) {
+  .hero .container, .hero-content { padding-left: 20px; padding-right: 20px; }
+  .h1-thin  { font-size: clamp(1.4rem, 7vw, 1.8rem); }
+  .h1-heavy { font-size: clamp(2.8rem, 12vw, 4rem); }
+  .btn-primary { min-height: 48px; }
+  .hero-wa-link { font-size: 0.73rem; }
+  .container { padding: 0 20px; }
+}
+@media (max-width: 375px) {
+  .h1-heavy { font-size: clamp(2.4rem, 11vw, 3.4rem); }
+  h2        { font-size: clamp(2rem, 9vw, 3rem); }
+  .price-card { padding: 24px 14px; }
+  .p-val    { font-size: clamp(3rem, 10vw, 5rem); }
+}
+@media (max-width: 768px) {
+  .wp-float { bottom: 88px; right: 16px; width: 52px; padding: 0; justify-content: center; }
+  .wp-float-text { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar" id="navbar">
+  <a href="#" class="nav-logo">V.I.A.</a>
+  <ul class="nav-links">
+    <li><a href="#gems">Os Diretores</a></li>
+    <li><a href="#como">O Set</a></li>
+    <li><a href="#preco">Produção</a></li>
+    <li><a href="https://wa.me/5511990101393?text=Oi!%20Vi%20o%20an%C3%BAncio%20e%20quero%20saber%20mais" class="nav-wa" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.135 1.528 5.888L0 24l6.302-1.506A11.933 11.933 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 01-5.006-1.371l-.36-.214-3.737.892.944-3.634-.235-.374A9.818 9.818 0 1112 21.818z"/></svg>Tirar dúvidas</a></li>
+    <li><a href="#preco" class="nav-cta">ENTRAR NO SET</a></li>
+  </ul>
+</nav>
+
+<!-- ══ [01] HERO ══ -->
+<section class="hero" id="hero">
+  <img src="assets/hero-bg.png"
+       class="hero-bg-img" id="heroImg" alt="" loading="eager" decoding="async">
+  <canvas id="particlesCanvas"></canvas>
+  <div class="container hero-content">
+    <div class="hero-copy">
+      <span class="eyebrow">APRESENTANDO O V.I.A.</span>
+      <h1 class="hero-h1">
+        <span class="h1-thin">FAÇA VÍDEOS</span>
+        <span class="h1-heavy">COMO UM CINEASTA<span class="dot">.</span></span>
+      </h1>
+      <p class="hero-lead">Os especialistas de IA que falam a linguagem dos maiores cineastas do mundo. Sem câmera. Sem equipe. Sem limite.</p>
+      <div class="hero-cta-group">
+        <button class="btn-primary cta-glow">QUERO DIRIGIR AGORA</button>
+        <a class="btn-ghost" href="#como">Ver como funciona ↓</a>
+      </div>
+      <a href="https://wa.me/5511990101393?text=Oi!%20Vi%20o%20an%C3%BAncio%20e%20quero%20saber%20mais" class="hero-wa-link" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.135 1.528 5.888L0 24l6.302-1.506A11.933 11.933 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 01-5.006-1.371l-.36-.214-3.737.892.944-3.634-.235-.374A9.818 9.818 0 1112 21.818z"/></svg>Prefere tirar dúvidas? Fala no WhatsApp</a>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-section">
+
+  <!-- Faixa 1: fundo vermelho, texto escuro -->
+  <div class="marquee-wrap" style="background:var(--red)">
+    <div class="marquee-inner" style="animation-duration:22s">
+      <span style="color:#080808; font-family:'Inter',sans-serif; font-weight:600; font-size:0.7rem; letter-spacing:0.3em; text-transform:uppercase; padding:13px 48px 13px 0; white-space:nowrap; display:inline-block">
+        ROTEIRO CINEMATOGRÁFICO &nbsp;·&nbsp; DIREÇÃO DE CENA &nbsp;·&nbsp; CONTINUIDADE DE PROJETO &nbsp;·&nbsp; THUMBNAIL DE IMPACTO &nbsp;·&nbsp; HOOK IRRESISTÍVEL &nbsp;·&nbsp; EDIÇÃO INTELIGENTE &nbsp;·&nbsp;
+      </span>
+      <span style="color:#080808; font-family:'Inter',sans-serif; font-weight:600; font-size:0.7rem; letter-spacing:0.3em; text-transform:uppercase; padding:13px 48px 13px 0; white-space:nowrap; display:inline-block">
+        ROTEIRO CINEMATOGRÁFICO &nbsp;·&nbsp; DIREÇÃO DE CENA &nbsp;·&nbsp; CONTINUIDADE DE PROJETO &nbsp;·&nbsp; THUMBNAIL DE IMPACTO &nbsp;·&nbsp; HOOK IRRESISTÍVEL &nbsp;·&nbsp; EDIÇÃO INTELIGENTE &nbsp;·&nbsp;
+      </span>
+    </div>
+  </div>
+
+  <!-- Faixa 2: borda sutil, texto prata, reverso -->
+  <div class="marquee-wrap" style="border-top:1px solid rgba(232,25,44,0.18); border-bottom:1px solid rgba(232,25,44,0.18)">
+    <div class="marquee-inner" style="animation-duration:32s; animation-direction:reverse">
+      <span style="color:var(--silver); font-family:'Inter',sans-serif; font-weight:400; font-size:0.7rem; letter-spacing:0.3em; text-transform:uppercase; padding:13px 48px 13px 0; white-space:nowrap; display:inline-block">
+        SEM CÂMERA &nbsp;·&nbsp; SEM EQUIPE &nbsp;·&nbsp; DIRETO NO GEMINI &nbsp;·&nbsp; ACESSO VITALÍCIO &nbsp;·&nbsp; PADRÃO HOLLYWOOD &nbsp;·&nbsp; RESULTADOS REAIS &nbsp;·&nbsp;
+      </span>
+      <span style="color:var(--silver); font-family:'Inter',sans-serif; font-weight:400; font-size:0.7rem; letter-spacing:0.3em; text-transform:uppercase; padding:13px 48px 13px 0; white-space:nowrap; display:inline-block">
+        SEM CÂMERA &nbsp;·&nbsp; SEM EQUIPE &nbsp;·&nbsp; DIRETO NO GEMINI &nbsp;·&nbsp; ACESSO VITALÍCIO &nbsp;·&nbsp; PADRÃO HOLLYWOOD &nbsp;·&nbsp; RESULTADOS REAIS &nbsp;·&nbsp;
+      </span>
+    </div>
+  </div>
+
+</div>
+
+<div class="section-divider"></div>
+
+<!-- ══ [02] PROBLEMA ══ -->
+<section class="problema" id="problema">
+  <div class="container">
+    <div class="sh">
+      <span class="eyebrow reveal">O PROBLEMA</span>
+      <div class="sec-line reveal"></div>
+      <h2 class="reveal">VOCÊ TRAVA NA<br><span class="highlight-red">PRODUÇÃO</span>.</h2>
+      <p class="lead reveal" style="margin-top:20px; max-width:560px;">Boa ideia, execução travada. Parece familiar?</p>
+    </div>
+    <div class="g3">
+      <div class="card prob-card">
+        <span class="prob-icon">🎥</span>
+        <h3>SEM EQUIPAMENTO,<br>SEM RESULTADO</h3>
+        <p>Você tem a ideia, mas sem câmera, iluminação e edição profissional o resultado não reflete o seu potencial.</p>
+      </div>
+      <div class="card prob-card">
+        <span class="prob-icon">⏱</span>
+        <h3>HORAS QUE<br>VIRAM DIAS</h3>
+        <p>Roteiro, gravação, edição, thumb, legenda... cada vídeo consome mais tempo do que deveria.</p>
+      </div>
+      <div class="card prob-card">
+        <span class="prob-icon">💸</span>
+        <h3>CUSTO QUE<br>INVIABILIZA</h3>
+        <p>Agência de vídeo, freelancer, editor, designer. Tudo caro. Tudo lento. Tudo fora do seu controle.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ══ [03] SOLUÇÃO ══ -->
+<section class="solucao" id="solucao">
+  <div class="container">
+    <div class="sh center">
+      <div class="deco-inf">∞</div>
+      <span class="eyebrow reveal">A SOLUÇÃO</span>
+      <div class="sec-line center reveal"></div>
+      <h2 class="reveal">SEU <span class="highlight-red">ESTÚDIO</span> COMPLETO<br>DENTRO DO SEU BOLSO.</h2>
+      <p class="lead reveal" style="margin:20px auto 0; max-width:580px;">O V.I.A. é um painel de especialistas de IA que cobrem cada etapa da produção de vídeo — do roteiro ao thumbnail, da ideia ao upload.</p>
+    </div>
+    <div class="g22">
+      <div class="card pillar">
+        <span class="pillar-ic">🎬</span>
+        <div><h3>ROTEIRO CINEMATOGRÁFICO POR NICHO</h3><p>Scripts calibrados para seu público, formato e plataforma.</p></div>
+      </div>
+      <div class="card pillar">
+        <span class="pillar-ic">🎭</span>
+        <div><h3>DIREÇÃO DE CENA E LINGUAGEM VISUAL</h3><p>Ângulos, atmosfera e ritmo que transformam ideias em cinema.</p></div>
+      </div>
+      <div class="card pillar">
+        <span class="pillar-ic">🎞</span>
+        <div><h3>ESTRUTURA DE EDIÇÃO PARA MÁXIMA RETENÇÃO</h3><p>Cortes e ritmo otimizados para cada plataforma e audiência.</p></div>
+      </div>
+      <div class="card pillar">
+        <span class="pillar-ic">🖼</span>
+        <div><h3>THUMBNAILS DE IMPACTO COM IA</h3><p>Prompts que param o scroll e geram cliques compulsivos.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ══ [04] OS DIRETORES ══ -->
+<section class="gems" id="gems">
+  <div class="container">
+    <div class="sh">
+      <span class="eyebrow reveal">SEU ELENCO DE IAs</span>
+      <div class="sec-line reveal"></div>
+      <h2 class="reveal">CADA DIRETOR,<br>UM <span class="highlight-gold">ESPECIALISTA</span>.</h2>
+    </div>
+    <div class="g3">
+
+      <div class="card gem-card">
+        <svg class="gem-ic" viewBox="0 0 42 42" fill="none">
+          <rect x="3" y="7" width="26" height="4" rx="2" fill="#E8192C"/>
+          <rect x="3" y="15" width="36" height="4" rx="2" fill="#E8192C" opacity="0.55"/>
+          <rect x="3" y="23" width="22" height="4" rx="2" fill="#E8192C" opacity="0.35"/>
+          <rect x="3" y="31" width="30" height="4" rx="2" fill="#E8192C" opacity="0.18"/>
+        </svg>
+        <div class="gem-name">SCRIPT MASTER</div>
+        <div class="gem-role">O Roteirista</div>
+        <p class="gem-desc">Roteiros virais calibrados por nicho, formato e duração. Do YouTube ao Reels, cada palavra tem propósito.</p>
+      </div>
+
+      <div class="card gem-card">
+        <svg class="gem-ic" viewBox="0 0 42 42" fill="none">
+          <circle cx="21" cy="21" r="13" stroke="#D4AF37" stroke-width="2"/>
+          <circle cx="21" cy="21" r="5" fill="#D4AF37" fill-opacity="0.25"/>
+          <line x1="21" y1="3" x2="21" y2="8" stroke="#D4AF37" stroke-width="2" stroke-linecap="round"/>
+          <line x1="21" y1="34" x2="21" y2="39" stroke="#D4AF37" stroke-width="2" stroke-linecap="round"/>
+          <line x1="3" y1="21" x2="8" y2="21" stroke="#D4AF37" stroke-width="2" stroke-linecap="round"/>
+          <line x1="34" y1="21" x2="39" y2="21" stroke="#D4AF37" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <div class="gem-name">DIRECTOR AI</div>
+        <div class="gem-role">O Diretor</div>
+        <p class="gem-desc">Linguagem de cena, ângulos, ritmo e atmosfera visual. Transforma conceitos em direção cinematográfica real.</p>
+      </div>
+
+      <div class="card gem-card">
+        <svg class="gem-ic" viewBox="0 0 42 42" fill="none">
+          <polygon points="21,4 39,36 3,36" stroke="#E8192C" stroke-width="2" fill="none" stroke-linejoin="round"/>
+          <line x1="21" y1="15" x2="21" y2="25" stroke="#E8192C" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="21" cy="30" r="1.8" fill="#E8192C"/>
+        </svg>
+        <div class="gem-name">HOOK FACTORY</div>
+        <div class="gem-role">O Diretor de Abertura</div>
+        <p class="gem-desc">Os primeiros 3 segundos que determinam tudo. Hooks que prendem, retêm e convertem.</p>
+      </div>
+
+      <div class="card gem-card">
+        <svg class="gem-ic" viewBox="0 0 42 42" fill="none">
+          <rect x="15" y="5" width="12" height="20" rx="6" stroke="#D4AF37" stroke-width="2"/>
+          <path d="M7 23c0 7.732 6.268 14 14 14s14-6.268 14-14" stroke="#D4AF37" stroke-width="2" stroke-linecap="round"/>
+          <line x1="21" y1="37" x2="21" y2="42" stroke="#D4AF37" stroke-width="2"/>
+          <line x1="15" y1="42" x2="27" y2="42" stroke="#D4AF37" stroke-width="2"/>
+        </svg>
+        <div class="gem-name">NARRATOR PRO</div>
+        <div class="gem-role">A Voz</div>
+        <p class="gem-desc">Scripts naturais e persuasivos para narração com IA. Texto que flui, convence e soa completamente humano.</p>
+      </div>
+
+      <div class="card gem-card">
+        <svg class="gem-ic" viewBox="0 0 42 42" fill="none">
+          <rect x="3" y="7" width="36" height="28" rx="3" stroke="#E8192C" stroke-width="2"/>
+          <circle cx="13" cy="17" r="4" fill="#E8192C" fill-opacity="0.45"/>
+          <path d="M3 27 L13 19 L21 25 L29 17 L39 27" stroke="#E8192C" stroke-width="1.8" fill="none" stroke-linejoin="round"/>
+        </svg>
+        <div class="gem-name">THUMB GENIUS</div>
+        <div class="gem-role">O Diretor de Arte</div>
+        <p class="gem-desc">Prompts de thumbnail que param o scroll. Composição, contraste e a psicologia do clique irresistível.</p>
+      </div>
+
+      <div class="card gem-card">
+        <svg class="gem-ic" viewBox="0 0 42 42" fill="none">
+          <line x1="3" y1="11" x2="39" y2="11" stroke="#D4AF37" stroke-width="2"/>
+          <line x1="3" y1="21" x2="39" y2="21" stroke="#D4AF37" stroke-width="2"/>
+          <line x1="3" y1="31" x2="39" y2="31" stroke="#D4AF37" stroke-width="2"/>
+          <circle cx="15" cy="11" r="4" fill="#D4AF37"/>
+          <circle cx="27" cy="21" r="4" fill="#D4AF37"/>
+          <circle cx="19" cy="31" r="4" fill="#D4AF37"/>
+        </svg>
+        <div class="gem-name">VIRAL EDITOR</div>
+        <div class="gem-role">O Editor</div>
+        <p class="gem-desc">Estrutura de corte para retenção máxima por plataforma. Edição que prende do primeiro ao último segundo.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ══ [05] PARA QUEM ══ -->
+<section class="para-quem" id="para-quem">
+  <div class="container">
+    <div class="sh">
+      <span class="eyebrow reveal">PARA QUEM É</span>
+      <div class="sec-line reveal"></div>
+      <h2 class="reveal">FEITO PRA QUEM<br>CRIA COM <span class="highlight-red">INTENÇÃO</span>.</h2>
+    </div>
+    <div class="g2">
+      <div class="reveal">
+        <div class="col-title">V.I.A. É PRA VOCÊ SE...</div>
+        <ul class="list-y">
+          <li><svg class="chk" width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="#E8192C" fill-opacity="0.14"/><path d="M5.5 10l3.5 3.5 5.5-5.5" stroke="#E8192C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Você cria conteúdo mas trava na produção de vídeo</li>
+          <li><svg class="chk" width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="#E8192C" fill-opacity="0.14"/><path d="M5.5 10l3.5 3.5 5.5-5.5" stroke="#E8192C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Você tem agência e quer escalar entregas com IA</li>
+          <li><svg class="chk" width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="#E8192C" fill-opacity="0.14"/><path d="M5.5 10l3.5 3.5 5.5-5.5" stroke="#E8192C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Você vende infoproduto e precisa de vídeos de conversão</li>
+          <li><svg class="chk" width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="#E8192C" fill-opacity="0.14"/><path d="M5.5 10l3.5 3.5 5.5-5.5" stroke="#E8192C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Você é creator e quer parecer uma produtora profissional</li>
+          <li><svg class="chk" width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="#E8192C" fill-opacity="0.14"/><path d="M5.5 10l3.5 3.5 5.5-5.5" stroke="#E8192C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Você não tem equipe mas tem ambição de estúdio</li>
+        </ul>
+      </div>
+      <div class="reveal">
+        <div class="col-title">NÃO É PRA VOCÊ SE...</div>
+        <ul class="list-n">
+          <li><svg class="chk" width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(192,186,178,0.07)"/><path d="M6.5 6.5l7 7M13.5 6.5l-7 7" stroke="#C0BAB2" stroke-width="1.8" stroke-linecap="round" stroke-opacity="0.45"/></svg><span style="opacity:0.48">Você quer resultados sem nenhum esforço ou aprendizado</span></li>
+          <li><svg class="chk" width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(192,186,178,0.07)"/><path d="M6.5 6.5l7 7M13.5 6.5l-7 7" stroke="#C0BAB2" stroke-width="1.8" stroke-linecap="round" stroke-opacity="0.45"/></svg><span style="opacity:0.48">Você não usa e não quer usar o Gemini</span></li>
+          <li><svg class="chk" width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(192,186,178,0.07)"/><path d="M6.5 6.5l7 7M13.5 6.5l-7 7" stroke="#C0BAB2" stroke-width="1.8" stroke-linecap="round" stroke-opacity="0.45"/></svg><span style="opacity:0.48">Você prefere templates genéricos a resultados reais</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ══ [06] O SET ══ -->
+<section class="como" id="como">
+  <div class="container">
+    <div class="sh center">
+      <span class="eyebrow reveal">O SET</span>
+      <div class="sec-line center reveal"></div>
+      <h2 class="reveal">3 PASSOS. <span class="highlight-gold">CENA</span> PRONTA.</h2>
+    </div>
+    <div style="position:relative; margin-top:48px">
+      <svg class="steps-svg" height="2" viewBox="0 0 400 2" preserveAspectRatio="none" fill="none" id="stepLine">
+        <path d="M 0 1 L 400 1" stroke="url(#lineGrad)" stroke-width="1.5"/>
+        <defs>
+          <linearGradient id="lineGrad" x1="0" y1="0" x2="400" y2="0" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#E8192C" stop-opacity="0.5"/>
+            <stop offset="100%" stop-color="#D4AF37" stop-opacity="0.5"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">01</div>
+          <div class="step-body">
+            <span class="step-lbl">PASSO 01</span>
+            <h3>ACESSE</h3>
+            <p>Você entra no painel V.I.A. e escolhe o Diretor para o tipo de vídeo que vai criar.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">02</div>
+          <div class="step-body">
+            <span class="step-lbl">PASSO 02</span>
+            <h3>DIRIJA</h3>
+            <p>Você alimenta o Diretor com seu contexto — nicho, produto, objetivo — e ele entrega material completo de produção.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">03</div>
+          <div class="step-body">
+            <span class="step-lbl">PASSO 03</span>
+            <h3>PUBLIQUE</h3>
+            <p>Você usa o output no Gemini, CapCut ou DaVinci. Vídeo profissional. Sem equipe. Sem câmera.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ══ [07] O QUE VOCÊ RECEBE ══ -->
+<section class="recebe" id="recebe">
+  <div class="container">
+    <div class="sh">
+      <span class="eyebrow reveal">O QUE ESTÁ INCLUSO</span>
+      <div class="sec-line reveal"></div>
+      <h2 class="reveal">TUDO QUE SEU<br><span class="highlight-red">ESTÚDIO</span> PRECISA.</h2>
+    </div>
+    <div class="counters reveal-stagger">
+      <div>
+        <span class="ctr-val"><span class="count-up" data-target="6" data-suffix="+">0+</span></span>
+        <div class="ctr-lbl">Diretores Especializados</div>
+      </div>
+      <div>
+        <span class="ctr-val">∞</span>
+        <div class="ctr-lbl">Vídeos que você pode criar</div>
+      </div>
+      <div>
+        <span class="ctr-val">0</span>
+        <div class="ctr-lbl">Câmeras necessárias</div>
+      </div>
+    </div>
+    <div class="inc-grid reveal-stagger">
+      <div class="inc-item">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="#D4AF37" fill-opacity="0.14"/><path d="M5.5 10l3.5 3.5 5.5-5.5" stroke="#D4AF37" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Acesso a todos os Diretores V.I.A.
+      </div>
+      <div class="inc-item">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="#D4AF37" fill-opacity="0.14"/><path d="M5.5 10l3.5 3.5 5.5-5.5" stroke="#D4AF37" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Acesso vitalício + todas as atualizações
+      </div>
+      <div class="inc-item">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="#D4AF37" fill-opacity="0.14"/><path d="M5.5 10l3.5 3.5 5.5-5.5" stroke="#D4AF37" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Guia de uso completo para cada Diretor
+      </div>
+      <div class="inc-item">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="#D4AF37" fill-opacity="0.14"/><path d="M5.5 10l3.5 3.5 5.5-5.5" stroke="#D4AF37" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Comunidade e suporte V.I.A.
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ══ [09] GARANTIA ══ -->
+<section class="garantia" id="garantia">
+  <div class="container">
+    <div class="guar-center">
+      <span class="eyebrow reveal">SEM RISCO</span>
+      <div class="sec-line center reveal"></div>
+      <div class="shield-wrap reveal">
+        <svg viewBox="0 0 100 118" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="sg" x1="0" y1="0" x2="100" y2="118" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#E8192C"/>
+              <stop offset="100%" stop-color="#D4AF37"/>
+            </linearGradient>
+          </defs>
+          <path d="M50 4L8 21v36c0 26.5 18 51 42 57 24-6 42-30.5 42-57V21L50 4z" stroke="url(#sg)" stroke-width="3" fill="none"/>
+          <path d="M50 13L17 28v29c0 21.5 14.5 41.5 33 46.5C69 98.5 83 78.5 83 57V28L50 13z" fill="url(#sg)" fill-opacity="0.1"/>
+          <path d="M35 57l11 11 21-21" stroke="url(#sg)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h2 class="reveal">SEM <span class="highlight-red">RISCO.</span></h2>
+      <p class="guar-text reveal">
+        Não gostou por qualquer motivo dentro de 7 dias?<br>
+        Devolvemos <strong style="color:var(--cream)">100% do seu investimento</strong>.<br>
+        Sem perguntas. Sem burocracia. Sem enrolação.
+      </p>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ══ [10] PRODUÇÃO / PREÇO ══ -->
+<section class="preco" id="preco">
+  <div class="container">
+    <div class="sh center">
+      <span class="eyebrow reveal">INVESTIMENTO</span>
+      <div class="sec-line center reveal"></div>
+      <h2 class="reveal">UMA VEZ.<br><span class="highlight-gold">PARA SEMPRE.</span></h2>
+    </div>
+    <div class="price-card reveal">
+      <span class="p-tag">ACESSO COMPLETO</span>
+      <div class="p-name">V.I.A.</div>
+      <div class="p-from">De: R$ 497,00</div>
+      <div class="p-val"><span class="p-cur">R$</span>297</div>
+      <div class="p-inst">ou 12× de R$ 29,70 &nbsp;·&nbsp; Acesso imediato</div>
+      <ul class="p-list">
+        <li><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="9" fill="#D4AF37" fill-opacity="0.14"/><path d="M5 9l3 3 5-5" stroke="#D4AF37" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Todos os 6 Diretores V.I.A. especializados</li>
+        <li><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="9" fill="#D4AF37" fill-opacity="0.14"/><path d="M5 9l3 3 5-5" stroke="#D4AF37" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Acesso vitalício + todas as atualizações</li>
+        <li><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="9" fill="#D4AF37" fill-opacity="0.14"/><path d="M5 9l3 3 5-5" stroke="#D4AF37" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Garantia incondicional de 7 dias</li>
+      </ul>
+      <button class="btn-primary cta-glow" style="width:100%; justify-content:center; padding:20px 40px;">QUERO DIRIGIR AGORA</button>
+      <p class="p-sec">🔒 Pagamento 100% seguro · Acesso imediato</p>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ══ [11] FAQ ══ -->
+<section class="faq" id="faq">
+  <div class="container">
+    <div class="sh center" style="max-width:600px; margin:0 auto 64px">
+      <span class="eyebrow reveal">DÚVIDAS</span>
+      <div class="sec-line center reveal"></div>
+      <h2 class="reveal">RESPONDEMOS ANTES<br>DE VOCÊ <span class="highlight-red">PERGUNTAR</span>.</h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item reveal">
+        <button class="faq-q">Preciso saber editar vídeo?<svg class="faq-chev" width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 8l5 5 5-5" stroke="#E8192C" stroke-width="2" stroke-linecap="round"/></svg></button>
+        <div class="faq-a"><div class="faq-ai">Não. O V.I.A. foi feito para quem tem a ideia mas não domina a técnica. Os Diretores entregam material de produção pronto — você só aplica. Se quiser editar, ferramentas como CapCut têm curva de aprendizado mínima.</div></div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-q">O V.I.A. funciona para qualquer nicho?<svg class="faq-chev" width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 8l5 5 5-5" stroke="#E8192C" stroke-width="2" stroke-linecap="round"/></svg></button>
+        <div class="faq-a"><div class="faq-ai">Sim. Os Diretores foram desenvolvidos com prompts adaptáveis para qualquer mercado — educação, beleza, finanças, fitness, tecnologia, entretenimento. Você informa o nicho e o Diretor calibra para ele.</div></div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-q">Precisa de conta no Gemini paga?<svg class="faq-chev" width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 8l5 5 5-5" stroke="#E8192C" stroke-width="2" stroke-linecap="round"/></svg></button>
+        <div class="faq-a"><div class="faq-ai">Recomendamos o Gemini Advanced para melhor performance, mas muitos Diretores funcionam na versão gratuita. Você decide o nível de investimento de acordo com sua demanda.</div></div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-q">Como acesso após a compra?<svg class="faq-chev" width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 8l5 5 5-5" stroke="#E8192C" stroke-width="2" stroke-linecap="round"/></svg></button>
+        <div class="faq-a"><div class="faq-ai">Imediatamente após a confirmação do pagamento você recebe o acesso por e-mail. Em menos de 5 minutos você já está dentro do painel V.I.A. e pronto para criar.</div></div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-q">É atualizado com novos Diretores?<svg class="faq-chev" width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 8l5 5 5-5" stroke="#E8192C" stroke-width="2" stroke-linecap="round"/></svg></button>
+        <div class="faq-a"><div class="faq-ai">Sim. O V.I.A. é um sistema vivo. À medida que novos recursos de IA surgem, novos Diretores e guias são adicionados — e você recebe tudo como parte do acesso vitalício, sem custo adicional.</div></div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-q">Posso usar para clientes?<svg class="faq-chev" width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 8l5 5 5-5" stroke="#E8192C" stroke-width="2" stroke-linecap="round"/></svg></button>
+        <div class="faq-a"><div class="faq-ai">Absolutamente. Agências e freelancers usam o V.I.A. para escalar produção de conteúdo para múltiplos clientes simultaneamente. É um multiplicador de capacidade para quem vive de vídeo.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <div class="container">
+    <div class="f-div"></div>
+    <div class="f-inner">
+      <div>
+        <div class="f-logo">V.I.A.</div>
+        <div class="f-tagline">Vídeos infinitos. Resultados reais.</div>
+      </div>
+      <ul class="f-links">
+        <li><a href="#">Termos de Uso</a></li>
+        <li><a href="#">Privacidade</a></li>
+        <li><a href="#">Suporte</a></li>
+      </ul>
+      <div class="f-copy">© 2026 V.I.A. — Vídeos Infinitos com IA</div>
+    </div>
+  </div>
+</footer>
+
+<!-- FLOATING CTA MOBILE -->
+<div class="floating-cta" id="floatingCta">
+  <button class="btn-primary cta-glow">QUERO DIRIGIR AGORA</button>
+</div>
+
+<!-- WP FLOAT -->
+<a href="https://wa.me/5511990101393?text=Oi!%20Vi%20o%20an%C3%BAncio%20e%20quero%20saber%20mais" class="wp-float" id="wpFloat" target="_blank" rel="noopener" aria-label="Fala comigo no WhatsApp"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.135 1.528 5.888L0 24l6.302-1.506A11.933 11.933 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 01-5.006-1.371l-.36-.214-3.737.892.944-3.634-.235-.374A9.818 9.818 0 1112 21.818z"/></svg><span class="wp-float-text">Prefere tirar dúvidas? 👉 Fala no WhatsApp</span></a>
+
+<script>
+document.fonts.ready.then(() => {
+
+  ScrollTrigger.defaults({ markers: false });
+
+  initAnimations();
+  initNavbar();
+  initAccordion();
+  initParticles();
+  initCounters();
+  initWpFloat();
+
+  window.addEventListener('load', () => {
+    ScrollTrigger.refresh();
+  });
+
+});
+
+/* ── NAVBAR ── */
+function initNavbar() {
+  const nav = document.getElementById('navbar');
+  ScrollTrigger.create({
+    start: 'top -80',
+    onEnter:     () => nav.classList.add('scrolled'),
+    onLeaveBack: () => nav.classList.remove('scrolled')
+  });
+}
+
+/* ── ANIMATIONS ── */
+function initAnimations() {
+
+  /* Hero entrance */
+  const tl = gsap.timeline({ delay: 0.3 });
+  tl.from('.hero .eyebrow',  { opacity: 0, y: 20, duration: 0.7, ease: 'power2.out' })
+    .from('.h1-thin',        { opacity: 0, y: 30, duration: 0.8, ease: 'power3.out' }, '-=0.3')
+    .from('.h1-heavy',       { opacity: 0, y: 70, duration: 1.1, ease: 'power3.out' }, '-=0.5')
+    .from('.hero-lead',      { opacity: 0, y: 30, duration: 0.8, ease: 'power2.out' }, '-=0.4')
+    .from('.hero-cta-group', { opacity: 0, y: 20, duration: 0.7, ease: 'power2.out' }, '-=0.4');
+
+  /* Mouse parallax on hero image — RAF-throttled, skipped on low-end */
+  const heroImg = document.getElementById('heroImg');
+  if (heroImg) {
+    let _raf = null;
+    document.addEventListener('mousemove', (e) => {
+      if (_raf) return;
+      _raf = requestAnimationFrame(() => {
+        const x = (e.clientX / window.innerWidth  - 0.5) * 18;
+        const y = (e.clientY / window.innerHeight - 0.5) * 10;
+        heroImg.style.transform = 'translate(' + x + 'px, ' + y + 'px) scale(1.04)';
+        _raf = null;
+      });
+    });
+    document.addEventListener('mouseleave', () => {
+      heroImg.style.transform = 'translate(0,0) scale(1.04)';
+    });
+  }
+
+  /* Global scroll reveals */
+  gsap.utils.toArray('.reveal').forEach(el => {
+    gsap.from(el, {
+      opacity: 0, y: 48, duration: 1.0, ease: 'power3.out',
+      scrollTrigger: { trigger: el, start: 'top 92%', invalidateOnRefresh: true }
+    });
+  });
+
+  /* Card stagger — grouped per grid for clean delay reset */
+  document.querySelectorAll('.g3, .g2, .g22').forEach(grid => {
+    Array.from(grid.children).forEach((card, i) => {
+      gsap.from(card, {
+        opacity: 0,
+        y: 50,
+        rotateX: 8,
+        duration: 0.9,
+        ease: 'power3.out',
+        delay: i * 0.1,
+        scrollTrigger: {
+          trigger: card,
+          start: 'top 92%',
+          invalidateOnRefresh: true
+        }
+      });
+    });
+  });
+
+
+  /* Counters + inc-grid stagger */
+  gsap.utils.toArray('.reveal-stagger').forEach(parent => {
+    gsap.from(parent.children, {
+      opacity: 0, y: 40, duration: 0.9, ease: 'power3.out', stagger: 0.12,
+      scrollTrigger: { trigger: parent, start: 'top 80%', invalidateOnRefresh: true }
+    });
+  });
+
+  /* Steps stagger */
+  gsap.from('.steps .step', {
+    opacity: 0, y: 50, duration: 0.9, ease: 'power3.out', stagger: 0.15,
+    scrollTrigger: { trigger: '.steps', start: 'top 80%', invalidateOnRefresh: true }
+  });
+
+  /* Eyebrow line-grow via IntersectionObserver */
+  const eyeObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) e.target.classList.add('in-view');
+    });
+  }, { threshold: 0.3 });
+  document.querySelectorAll('.eyebrow').forEach(el => eyeObs.observe(el));
+
+  /* Steps connector line */
+  const stepPath = document.querySelector('#stepLine path');
+  if (stepPath) {
+    gsap.to(stepPath, {
+      strokeDashoffset: 0, ease: 'none',
+      scrollTrigger: {
+        trigger: '.como', start: 'top 60%', end: 'bottom 80%',
+        scrub: 1.2, invalidateOnRefresh: true
+      }
+    });
+  }
+
+  /* Mobile floating CTA */
+  const floatingCta = document.getElementById('floatingCta');
+  if (window.innerWidth <= 768) {
+    ScrollTrigger.create({
+      trigger: '.hero', start: 'bottom 40%',
+      onEnter:     () => floatingCta.classList.add('visible'),
+      onLeaveBack: () => floatingCta.classList.remove('visible')
+    });
+  }
+}
+
+/* ── ACCORDION ── */
+function initAccordion() {
+  document.querySelectorAll('.faq-item').forEach(item => {
+    item.querySelector('.faq-q').addEventListener('click', () => {
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item').forEach(i => {
+        i.classList.remove('open');
+        gsap.to(i.querySelector('.faq-a'), { height: 0, duration: 0.35, ease: 'power2.inOut' });
+        i.querySelector('.faq-chev').style.transform = 'rotate(0deg)';
+      });
+      if (!isOpen) {
+        item.classList.add('open');
+        gsap.to(item.querySelector('.faq-a'), { height: 'auto', duration: 0.4, ease: 'power2.out' });
+        item.querySelector('.faq-chev').style.transform = 'rotate(180deg)';
+      }
+    });
+  });
+}
+
+/* ── PARTICLES ── */
+function initParticles() {
+  const canvas = document.getElementById('particlesCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  function resize() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; }
+  resize();
+  window.addEventListener('resize', resize);
+  const particles = Array.from({ length: 55 }, () => ({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    r: Math.random() * 2.2 + 0.4,
+    alpha: Math.random() * 0.5 + 0.1,
+    vx: (Math.random() - 0.5) * 0.25,
+    vy: (Math.random() - 0.5) * 0.18,
+    color: Math.random() > 0.55 ? 'rgba(232,25,44,' : 'rgba(212,175,55,'
+  }));
+  let _pt = 0;
+  function tick(now) {
+    requestAnimationFrame(tick);
+    if (now - _pt < 34) return;
+    _pt = now;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => {
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0) p.x = canvas.width;
+      if (p.x > canvas.width) p.x = 0;
+      if (p.y < 0) p.y = canvas.height;
+      if (p.y > canvas.height) p.y = 0;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = p.color + p.alpha + ')';
+      ctx.shadowColor = p.color + '0.8)';
+      ctx.shadowBlur = 6;
+      ctx.fill();
+    });
+  }
+  requestAnimationFrame(tick);
+}
+
+/* ── COUNT-UP ── */
+function initCounters() {
+  const counters = document.querySelectorAll('.count-up');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const el     = entry.target;
+      const target = +el.dataset.target;
+      const dur    = 1800;
+      const step   = dur / target;
+      let current  = 0;
+      const timer  = setInterval(() => {
+        current++;
+        el.textContent = current + (el.dataset.suffix || '');
+        if (current >= target) clearInterval(timer);
+      }, step);
+      obs.unobserve(el);
+    });
+  }, { threshold: 0.5 });
+  counters.forEach(el => obs.observe(el));
+}
+
+/* ── WP FLOAT ── */
+function initWpFloat() {
+  const btn = document.getElementById('wpFloat');
+  if (!btn) return;
+  setTimeout(() => btn.classList.add('visible'), 1500);
+}
+</script>
+</body>
+</html>
